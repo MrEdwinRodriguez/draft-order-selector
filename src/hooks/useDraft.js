@@ -22,6 +22,7 @@ export const useDraft = () => {
   const [isSpinning, setIsSpinning] = useState(false)
   const [currentRotation, setCurrentRotation] = useState(0)
   const [lastSelection, setLastSelection] = useState(null)
+  const [pendingSelection, setPendingSelection] = useState(null)
 
   const remainingPlayers = getRemainingPlayers(players, draftResults)
 
@@ -83,7 +84,19 @@ export const useDraft = () => {
     setDraftResults([])
     setCurrentRotation(0)
     setLastSelection(null)
+    setPendingSelection(null)
   }, [])
+
+  /**
+   * Accept the pending selection and add to draft results
+   */
+  const acceptSelection = useCallback(() => {
+    if (pendingSelection) {
+      setDraftResults((prev) => [...prev, pendingSelection])
+      setLastSelection(pendingSelection)
+      setPendingSelection(null)
+    }
+  }, [pendingSelection])
 
   /**
    * Spin the wheel to select next player
@@ -115,14 +128,10 @@ export const useDraft = () => {
           settings.draftDirection
         )
         
-        setDraftResults((prev) => [
-          ...prev,
-          {
-            position: pickPosition,
-            player: selectedPlayer,
-          },
-        ])
-        setLastSelection({ position: pickPosition, player: selectedPlayer })
+        setPendingSelection({
+          position: pickPosition,
+          player: selectedPlayer,
+        })
       }
       setIsSpinning(false)
     }, delayMs)
@@ -147,6 +156,7 @@ export const useDraft = () => {
     isSpinning,
     currentRotation,
     lastSelection,
+    pendingSelection,
   }
 
   const clearLastSelection = useCallback(() => setLastSelection(null), [])
@@ -162,5 +172,6 @@ export const useDraft = () => {
     spinWheel,
     getCurrentPick,
     clearLastSelection,
+    acceptSelection,
   }
 }

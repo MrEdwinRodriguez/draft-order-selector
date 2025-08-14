@@ -12,7 +12,7 @@ import { getPickComment } from "@/utils/draft-utils"
 
 export const DraftWheel = () => {
   const {
-    state: { players, draftResults, settings, isSpinning, currentRotation, lastSelection },
+    state: { players, draftResults, settings, isSpinning, currentRotation, lastSelection, pendingSelection },
     remainingPlayers,
     addPlayer,
     shufflePlayers,
@@ -22,6 +22,7 @@ export const DraftWheel = () => {
     spinWheel,
     getCurrentPick,
     clearLastSelection,
+    acceptSelection,
   } = useDraft()
 
   const [showGuardModal, setShowGuardModal] = useState(false)
@@ -106,17 +107,19 @@ export const DraftWheel = () => {
       </Modal>
 
       <Modal
-        open={!!lastSelection}
-        onClose={clearLastSelection}
+        open={!!pendingSelection}
+        onClose={() => {}} // Don't allow closing without accepting
         title="Pick Assigned"
-        actionLabel="OK"
+        actionLabel="Accept"
+        onAction={acceptSelection}
+        position="top"
       >
-        {lastSelection && (
+        {pendingSelection && (
           <div className="space-y-3 text-center">
             <p className="text-lg text-gray-900">
-              <span className="font-semibold">{lastSelection.player.name}</span>, you have the <span className="font-semibold">{lastSelection.position}</span> pick in this year's draft.
+              <span className="font-semibold">{pendingSelection.player.name}</span>, you have the <span className="font-semibold">{pendingSelection.position}</span> pick in this year's draft.
             </p>
-            <p className="text-sm text-gray-700">{getPickComment(lastSelection.position, settings.leagueSize)}</p>
+            <p className="text-sm text-gray-700">{getPickComment(pendingSelection.position, settings.leagueSize)}</p>
           </div>
         )}
       </Modal>

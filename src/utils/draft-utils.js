@@ -92,16 +92,38 @@ export const WHEEL_COLORS = [
 	}
 	
 	const segmentAngle = 360 / remainingPlayers.length
-	// Adjust for pointer at 12 o'clock (270 degrees offset from 3 o'clock)
-	const normalizedAngle = (270 - (totalRotation % 360)) % 360
-	const selectedIndex = Math.floor(normalizedAngle / segmentAngle)
+	
+	// Normalize rotation to 0-360 range
+	const normalizedRotation = ((totalRotation % 360) + 360) % 360
+	
+	// The wheel rotates clockwise, and the pointer is fixed at the top (0°)
+	// When the wheel rotates by X degrees, the segment that was originally at angle 0 
+	// moves to angle X. So the segment that is now at the top (0°) where the pointer is
+	// was originally at angle (360 - X) % 360
+	
+	// The issue is that SVG uses a coordinate system where 0° is at 3 o'clock (right)
+	// and angles increase counterclockwise. But we're drawing our segments starting from the top (12 o'clock)
+	// and going clockwise.
+	
+	// In our drawing system:
+	// - Top (12 o'clock) is at 270° in SVG coordinates
+	// - We draw segments clockwise from the top
+	// - When the wheel rotates clockwise, we need to find which segment is now at the top (270° in SVG)
+	
+	// The segment that is now at the top (270° in SVG) was originally at angle (270 - rotation) % 360
+	const svgTopAngle = 270
+	const angleAtTop = (svgTopAngle - normalizedRotation + 360) % 360
+	const selectedIndex = Math.floor(angleAtTop / segmentAngle)
 	
 	// Ensure the index is within bounds
 	if (selectedIndex >= 0 && selectedIndex < remainingPlayers.length) {
-	  return remainingPlayers[selectedIndex]
+	  const selectedPlayer = remainingPlayers[selectedIndex]
+	  console.log(`Wheel rotation: ${normalizedRotation.toFixed(1)}°, Angle at top: ${angleAtTop.toFixed(1)}°, Segment angle: ${segmentAngle.toFixed(1)}°, Selected index: ${selectedIndex}, Player: ${selectedPlayer.name}, Total players: ${remainingPlayers.length}`)
+	  return selectedPlayer
 	}
 	
 	// Fallback to first player if calculation is out of bounds
+	console.log(`Index out of bounds: ${selectedIndex}, falling back to first player`)
 	return remainingPlayers[0]
   }
   
