@@ -87,8 +87,76 @@ export const WHEEL_COLORS = [
    * @returns {Object} Selected player object
    */
   export const calculateSelectedPlayer = (totalRotation, remainingPlayers) => {
+	if (!remainingPlayers || remainingPlayers.length === 0) {
+	  return null
+	}
+	
 	const segmentAngle = 360 / remainingPlayers.length
-	const normalizedAngle = (360 - (totalRotation % 360)) % 360
+	// Adjust for pointer at 12 o'clock (270 degrees offset from 3 o'clock)
+	const normalizedAngle = (270 - (totalRotation % 360)) % 360
 	const selectedIndex = Math.floor(normalizedAngle / segmentAngle)
-	return remainingPlayers[selectedIndex]
+	
+	// Ensure the index is within bounds
+	if (selectedIndex >= 0 && selectedIndex < remainingPlayers.length) {
+	  return remainingPlayers[selectedIndex]
+	}
+	
+	// Fallback to first player if calculation is out of bounds
+	return remainingPlayers[0]
+  }
+  
+  /**
+   * Get a short comment for a given pick number/league size
+   * @param {number} position
+   * @param {number} leagueSize
+   */
+  export function getPickComment(position, leagueSize) {
+	const last = leagueSize
+	if (position === Math.ceil(last / 2)) {
+	  return "Perfectly centered. Never on the clock too long, never out of the action."
+	}
+	if (position === 1) {
+	  return "Congrats! You just got the easiest decision of the draft. Try not to overthink it."
+	}
+	if (position === last) {
+	  return "Two quick picks, then you can watch your queue get destroyed for 20 minutes."
+	}
+	if (position == 2) {
+	  return "You should be able to get a good player here.  But rounds 2 and 3 are going to be key."
+	}
+	if (position == 3) {
+	  return "Premium talent up top. Bank the star, then be ready for a long wait."
+	}
+	if (position == 4) {
+	  return "Don't get too cute here in the first round.  Follow your rankings."
+	}
+	if (position == 5) {
+	  return "Draft what the board gives you. Hopefully you know your league well enough to know what to do."
+	}
+	if (position == 6) {
+	  return "Draft what the board gives you. Hopefully you know your league well enough to know what to do."
+	}
+	if (position == 7 ) {
+	  return "The sure things are probably gone at this point.  But still a lot of good first round talent left."
+	}
+	if (position == last - 2) {
+		return "The turn is your friend. Double-tap value and break hearts two at a time."
+	}
+	if (position == last - 1) {
+		return "This will be a quick turnaround. Be prepared to adjust quickly."
+	}
+	if (position == 8 ) {
+	  return "As the draft goes. Make sure you are aware of what the people after you need."
+	}
+	if (position == 9 ) {
+	  return "As the draft goes. Make sure you are aware of what the people after you need."
+	}
+	if (position == 10 ) {
+	  return "As the draft goes. Make sure you are aware of what the people after you need."
+	}
+	if (position < last / 2) {
+	  return "Early side advantage. Build anchors now; depth will come later."
+	}
+	// position > last/2
+	return "Late side leverage. Stack mini-runs and punish reaches with value."
   }

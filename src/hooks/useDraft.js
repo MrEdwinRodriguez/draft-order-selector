@@ -103,23 +103,27 @@ export const useDraft = () => {
     // Calculate which player was selected
     const selectedPlayer = calculateSelectedPlayer(totalRotation, remainingPlayers)
 
-    // Add result after animation completes
-    const delayMs = Math.max(1, Math.min(60, settings.spinDurationSeconds)) * 1000
+    // Add result after animation completes + 1 second delay
+    const spinDurationMs = Math.max(1, Math.min(60, settings.spinDurationSeconds)) * 1000
+    const delayMs = spinDurationMs + 1000 // Add 1 second delay
+
     setTimeout(() => {
-      const pickPosition = getCurrentPickPosition(
-        settings.leagueSize,
-        draftResults.length,
-        settings.draftDirection
-      )
-      
-      setDraftResults((prev) => [
-        ...prev,
-        {
-          position: pickPosition,
-          player: selectedPlayer,
-        },
-      ])
-      setLastSelection({ position: pickPosition, player: selectedPlayer })
+      if (selectedPlayer) {
+        const pickPosition = getCurrentPickPosition(
+          settings.leagueSize,
+          draftResults.length,
+          settings.draftDirection
+        )
+        
+        setDraftResults((prev) => [
+          ...prev,
+          {
+            position: pickPosition,
+            player: selectedPlayer,
+          },
+        ])
+        setLastSelection({ position: pickPosition, player: selectedPlayer })
+      }
       setIsSpinning(false)
     }, delayMs)
   }, [remainingPlayers, isSpinning, currentRotation, draftResults.length, settings.leagueSize, settings.draftDirection, settings.spinDurationSeconds])

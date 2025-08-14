@@ -8,6 +8,7 @@ import { useDraft } from "@/hooks/useDraft"
 import { Modal } from "@/components/layout/Modal"
 import { ConfettiOverlay } from "@/components/effects/Confetti"
 import { useState, useCallback, useEffect } from "react"
+import { getPickComment } from "@/utils/draft-utils"
 
 export const DraftWheel = () => {
   const {
@@ -111,9 +112,12 @@ export const DraftWheel = () => {
         actionLabel="OK"
       >
         {lastSelection && (
-          <p className="text-center text-lg text-gray-900">
-            <span className="font-semibold">{lastSelection.player.name}</span>, you have the <span className="font-semibold">{lastSelection.position}</span> pick in this year's draft.
-          </p>
+          <div className="space-y-3 text-center">
+            <p className="text-lg text-gray-900">
+              <span className="font-semibold">{lastSelection.player.name}</span>, you have the <span className="font-semibold">{lastSelection.position}</span> pick in this year's draft.
+            </p>
+            <p className="text-sm text-gray-700">{getPickComment(lastSelection.position, settings.leagueSize)}</p>
+          </div>
         )}
       </Modal>
 
