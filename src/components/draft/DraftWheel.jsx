@@ -11,7 +11,7 @@ import { useState, useCallback, useEffect } from "react"
 
 export const DraftWheel = () => {
   const {
-    state: { players, draftResults, settings, isSpinning, currentRotation },
+    state: { players, draftResults, settings, isSpinning, currentRotation, lastSelection },
     remainingPlayers,
     addPlayer,
     shufflePlayers,
@@ -20,6 +20,7 @@ export const DraftWheel = () => {
     resetDraft,
     spinWheel,
     getCurrentPick,
+    clearLastSelection,
   } = useDraft()
 
   const [showGuardModal, setShowGuardModal] = useState(false)
@@ -101,6 +102,19 @@ export const DraftWheel = () => {
         actionLabel="Got it"
       >
         Please add all players before spinning or adjust League Size.
+      </Modal>
+
+      <Modal
+        open={!!lastSelection}
+        onClose={clearLastSelection}
+        title="Pick Assigned"
+        actionLabel="OK"
+      >
+        {lastSelection && (
+          <p className="text-center text-lg text-gray-900">
+            <span className="font-semibold">{lastSelection.player.name}</span>, you have the <span className="font-semibold">{lastSelection.position}</span> pick in this year's draft.
+          </p>
+        )}
       </Modal>
 
       <Modal

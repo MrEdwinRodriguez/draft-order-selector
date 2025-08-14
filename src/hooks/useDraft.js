@@ -21,6 +21,7 @@ export const useDraft = () => {
   const [settings, setSettings] = useState(initialSettings)
   const [isSpinning, setIsSpinning] = useState(false)
   const [currentRotation, setCurrentRotation] = useState(0)
+  const [lastSelection, setLastSelection] = useState(null)
 
   const remainingPlayers = getRemainingPlayers(players, draftResults)
 
@@ -81,6 +82,7 @@ export const useDraft = () => {
   const resetDraft = useCallback(() => {
     setDraftResults([])
     setCurrentRotation(0)
+    setLastSelection(null)
   }, [])
 
   /**
@@ -117,6 +119,7 @@ export const useDraft = () => {
           player: selectedPlayer,
         },
       ])
+      setLastSelection({ position: pickPosition, player: selectedPlayer })
       setIsSpinning(false)
     }, delayMs)
   }, [remainingPlayers, isSpinning, currentRotation, draftResults.length, settings.leagueSize, settings.draftDirection, settings.spinDurationSeconds])
@@ -139,7 +142,10 @@ export const useDraft = () => {
     settings,
     isSpinning,
     currentRotation,
+    lastSelection,
   }
+
+  const clearLastSelection = useCallback(() => setLastSelection(null), [])
 
   return {
     state,
@@ -151,5 +157,6 @@ export const useDraft = () => {
     resetDraft,
     spinWheel,
     getCurrentPick,
+    clearLastSelection,
   }
 }
